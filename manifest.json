@@ -1,6 +1,6 @@
 {
-  "name": "Zyntix Calculator",
-  "short_name": "Zyntix",
+  "name": "All in One Zyntix Calculator",
+  "short_name": "Zyntix All in One Calculator",
   "description": "India's All-in-One Calculator — GST, EMI, BMI, Scientific and 20+ tools",
   "start_url": "./",
   "display": "standalone",
