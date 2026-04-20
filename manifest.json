@@ -1,0 +1,45 @@
+{
+  "name": "Zyntix Calculator",
+  "short_name": "Zyntix",
+  "description": "India's All-in-One Calculator — GST, EMI, BMI, Scientific and 20+ tools",
+  "start_url": "./",
+  "display": "standalone",
+  "background_color": "#f4f4ef",
+  "theme_color": "#f97316",
+  "orientation": "portrait",
+  "categories": ["utilities", "productivity"],
+  "icons": [
+    {
+      "src": "data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 512 512'><rect width='512' height='512' rx='80' fill='%23f97316'/><text y='400' x='60' font-size='380'>⚡</text></svg>",
+      "sizes": "512x512",
+      "type": "image/svg+xml",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 192 192'><rect width='192' height='192' rx='30' fill='%23f97316'/><text y='150' x='20' font-size='140'>⚡</text></svg>",
+      "sizes": "192x192",
+      "type": "image/svg+xml",
+      "purpose": "any maskable"
+    }
+  ],
+  "shortcuts": [
+    {
+      "name": "Basic Calculator",
+      "short_name": "Basic",
+      "url": "./#basic",
+      "description": "Open Basic Calculator"
+    },
+    {
+      "name": "GST Calculator",
+      "short_name": "GST",
+      "url": "./#gst",
+      "description": "Open GST Calculator"
+    },
+    {
+      "name": "EMI Calculator",
+      "short_name": "EMI",
+      "url": "./#emi",
+      "description": "Open EMI Calculator"
+    }
+  ]
+}
