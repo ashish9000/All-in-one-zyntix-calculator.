@@ -1,0 +1,850 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=yes">
+<title>Zyntix Calculator</title>
+<meta name="description" content="India's All-in-One Calculator — GST, EMI, BMI, Scientific and 20+ tools">
+<meta name="theme-color" content="#f97316">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<meta name="apple-mobile-web-app-title" content="Zyntix">
+<link rel="manifest" href="manifest.json">
+<style>
+*{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent;}
+body{background:#f4f4ef;color:#1c1007;font-family:-apple-system,'Segoe UI',Arial,sans-serif;display:flex;min-height:100vh;}
+:root{--ora:#f97316;--ora2:#ea580c;--oraL:#fff7ed;--oraL2:#ffedd5;--sur:#fff;--bor:#e5e1da;--tx:#1c1007;--tx2:#6b5e4e;--tx3:#9a8b7a;--red:#ef4444;--mono:'Courier New',monospace;}
+
+/* SIDEBAR */
+.sb{width:68px;min-height:100vh;background:#fff;border-right:2px solid var(--bor);display:flex;flex-direction:column;position:fixed;left:0;top:0;bottom:0;z-index:100;box-shadow:2px 0 10px rgba(249,115,22,0.1);}
+.sb-top{padding:10px 0 8px;text-align:center;background:linear-gradient(180deg,#f97316,#ea580c);border-bottom:2px solid var(--bor);flex-shrink:0;}
+.sb-top .ico{font-size:1.3rem;display:block;}
+.sb-top .nm{font-size:0.45rem;font-weight:900;color:#fff;letter-spacing:2px;}
+.sb-list{flex:1;overflow-y:auto;overflow-x:hidden;padding:4px 0 20px;}
+.sb-list::-webkit-scrollbar{display:none;}
+.sep{font-size:0.4rem;font-weight:800;color:#bbb;letter-spacing:2px;text-transform:uppercase;text-align:center;padding:8px 0 2px;}
+.nb{display:flex;flex-direction:column;align-items:center;gap:2px;width:100%;padding:7px 2px;border:none;background:transparent;cursor:pointer;position:relative;}
+.nb:hover,.nb:active{background:var(--oraL);}
+.nb.on{background:var(--oraL2);}
+.nb.on::before{content:'';position:absolute;left:0;top:0;bottom:0;width:3px;background:var(--ora);border-radius:0 3px 3px 0;}
+.nb .ni{font-size:1.15rem;}
+.nb .nn{font-size:0.44rem;font-weight:800;color:var(--tx3);text-transform:uppercase;text-align:center;line-height:1.2;}
+.nb.on .nn{color:var(--ora2);}
+
+/* MAIN */
+.main{margin-left:68px;flex:1;display:flex;flex-direction:column;min-height:100vh;}
+.topbar{padding:11px 15px;border-bottom:2px solid var(--bor);display:flex;align-items:center;gap:9px;background:#fff;box-shadow:0 2px 6px rgba(0,0,0,0.04);position:sticky;top:0;z-index:50;}
+.tbi{font-size:1.1rem;}
+.tbt{font-size:0.9rem;font-weight:800;}
+.badge{padding:2px 8px;border-radius:20px;font-size:0.55rem;font-weight:800;font-family:var(--mono);}
+.bf{background:#dcfce7;color:#16a34a;border:1.5px solid #bbf7d0;}
+.bc2{background:#fef3c7;color:#d97706;border:1.5px solid #fde68a;}
+.bh{background:#fee2e2;color:#dc2626;border:1.5px solid #fecaca;}
+.bm{background:#dbeafe;color:#2563eb;border:1.5px solid #bfdbfe;}
+.bb{background:#ede9fe;color:#7c3aed;border:1.5px solid #ddd6fe;}
+.bo{background:var(--oraL2);color:var(--ora2);border:1.5px solid #fed7aa;}
+
+.content{flex:1;padding:14px 12px;}
+.panel{display:none;}
+.panel.on{display:block;}
+
+/* CARD */
+.card{background:#fff;border:2px solid var(--bor);border-radius:12px;padding:15px;max-width:480px;box-shadow:0 2px 8px rgba(249,115,22,0.07);margin-bottom:12px;}
+.card h2{font-size:0.9rem;font-weight:800;margin-bottom:13px;display:flex;align-items:center;gap:6px;}
+.fr{margin-bottom:11px;}
+.fr label{display:block;font-size:0.6rem;font-weight:800;color:var(--tx2);margin-bottom:4px;text-transform:uppercase;letter-spacing:0.5px;}
+.fr input,.fr select{width:100%;padding:9px 11px;background:#faf9f7;border:2px solid var(--bor);border-radius:8px;color:var(--tx);font-family:var(--mono);font-size:0.86rem;outline:none;}
+.fr input:focus,.fr select:focus{border-color:var(--ora);}
+.r2{display:grid;grid-template-columns:1fr 1fr;gap:9px;}
+.btn{width:100%;padding:11px;border:none;border-radius:9px;background:linear-gradient(135deg,#f97316,#ea580c);color:#fff;font-family:-apple-system,Arial,sans-serif;font-size:0.88rem;font-weight:800;cursor:pointer;box-shadow:0 4px 12px rgba(249,115,22,0.3);}
+.btn:active{opacity:0.85;}
+.res{margin-top:12px;padding:13px;background:var(--oraL);border:2px solid #fed7aa;border-radius:9px;display:none;}
+.res.show{display:block;}
+.rl{font-size:0.58rem;font-weight:800;color:var(--tx3);text-transform:uppercase;letter-spacing:.8px;margin-bottom:3px;}
+.rv{font-family:var(--mono);font-size:1.2rem;color:var(--ora2);font-weight:700;}
+.rs{font-size:0.68rem;color:var(--tx2);margin-top:5px;font-family:var(--mono);line-height:1.7;}
+
+/* BASIC CALC */
+.cw{max-width:320px;}
+.disp{background:#fff;border:2px solid var(--bor);border-radius:12px;padding:13px 15px;text-align:right;margin-bottom:11px;box-shadow:0 2px 8px rgba(249,115,22,0.1);position:relative;overflow:hidden;}
+.disp::before{content:'';position:absolute;top:0;left:0;right:0;height:3px;background:linear-gradient(90deg,#fb923c,#f97316,#ea580c);}
+.dexpr{font-size:0.72rem;color:var(--tx3);font-family:var(--mono);min-height:16px;word-break:break-all;}
+.dval{font-size:2rem;color:var(--tx);font-family:var(--mono);word-break:break-all;min-height:44px;font-weight:600;line-height:1.1;}
+.dlive{font-size:0.88rem;color:var(--ora2);font-family:var(--mono);min-height:19px;margin-top:2px;font-weight:700;}
+
+.tr{display:grid;grid-template-columns:repeat(5,1fr);gap:6px;margin-bottom:6px;}
+.gr{display:grid;grid-template-columns:repeat(4,1fr);gap:6px;}
+.bt{padding:14px 3px;border:2px solid var(--bor);border-radius:9px;background:#fff;color:var(--tx);font-family:var(--mono);font-size:0.97rem;cursor:pointer;text-align:center;font-weight:600;box-shadow:0 2px 4px rgba(0,0,0,0.05);}
+.bt:active{opacity:0.7;transform:scale(0.93);}
+.bt.op{background:var(--oraL2);color:var(--ora2);border-color:#fed7aa;font-weight:700;}
+.bt.eq{background:linear-gradient(135deg,#f97316,#ea580c);color:#fff;border-color:transparent;box-shadow:0 3px 10px rgba(249,115,22,0.4);font-weight:700;}
+.bt.cl{color:var(--red);background:#fff5f5;border-color:#fecaca;font-weight:800;}
+.bt.gy{color:var(--tx2);background:#faf9f7;}
+.bt.bk{color:var(--ora2);background:var(--oraL2);border-color:#fed7aa;font-weight:700;}
+
+/* SCI */
+.sg{display:grid;grid-template-columns:repeat(5,1fr);gap:5px;}
+.st{padding:8px 2px;border:1.5px solid var(--bor);border-radius:7px;background:#fff;color:var(--tx);font-family:var(--mono);font-size:0.73rem;cursor:pointer;text-align:center;font-weight:600;}
+.st:active{opacity:0.7;}
+.st.op{color:var(--ora2);background:var(--oraL2);border-color:#fed7aa;}
+.st.fn{color:#2563eb;background:#eff6ff;border-color:#bfdbfe;font-size:0.62rem;}
+.st.eq{background:linear-gradient(135deg,#f97316,#ea580c);color:#fff;border-color:transparent;}
+.st.cl{color:var(--red);background:#fff5f5;border-color:#fecaca;}
+
+/* UNIT */
+.utabs{display:flex;gap:5px;flex-wrap:wrap;margin-bottom:12px;}
+.ut{padding:4px 9px;border-radius:20px;border:2px solid var(--bor);background:#faf9f7;color:var(--tx2);font-size:0.65rem;font-weight:800;cursor:pointer;}
+.ut.on{background:var(--ora);border-color:var(--ora);color:#fff;}
+.cbig{font-size:1.45rem;font-family:var(--mono);color:var(--ora2);margin:6px 0;font-weight:600;}
+
+/* HOME */
+.wt{font-size:1.2rem;font-weight:900;margin-bottom:4px;}
+.wt s2{color:var(--ora);}
+.ws{color:var(--tx2);font-size:0.72rem;margin-bottom:15px;font-weight:600;}
+.hg{display:grid;grid-template-columns:repeat(auto-fill,minmax(78px,1fr));gap:8px;max-width:480px;}
+.hc{background:#fff;border:2px solid var(--bor);border-radius:10px;padding:11px 5px;cursor:pointer;text-align:center;box-shadow:0 1px 4px rgba(0,0,0,0.04);}
+.hc:active{border-color:var(--ora);background:var(--oraL);}
+.hc .hi{font-size:1.4rem;margin-bottom:4px;}
+.hc .hn{font-size:0.6rem;font-weight:800;}
+.hc .hc2{font-size:0.5rem;color:var(--tx3);margin-top:1px;font-weight:700;}
+</style>
+</head>
+<body>
+
+<nav class="sb">
+  <div class="sb-top"><span class="ico">⚡</span><span class="nm">ZYNTIX</span></div>
+  <div class="sb-list">
+    <div class="sep">MAIN</div>
+    <button class="nb" onclick="go('home')" data-id="home"><span class="ni">🏠</span><span class="nn">Home</span></button>
+    <button class="nb on" onclick="go('basic')" data-id="basic"><span class="ni">🔢</span><span class="nn">Basic</span></button>
+    <button class="nb" onclick="go('sci')" data-id="sci"><span class="ni">🧮</span><span class="nn">Sci</span></button>
+    <div class="sep">FINANCE</div>
+    <button class="nb" onclick="go('gst')" data-id="gst"><span class="ni">🧾</span><span class="nn">GST</span></button>
+    <button class="nb" onclick="go('emi')" data-id="emi"><span class="ni">🏦</span><span class="nn">EMI</span></button>
+    <button class="nb" onclick="go('fdrd')" data-id="fdrd"><span class="ni">📈</span><span class="nn">FD/RD</span></button>
+    <button class="nb" onclick="go('int')" data-id="int"><span class="ni">💹</span><span class="nn">Interest</span></button>
+    <button class="nb" onclick="go('pl')" data-id="pl"><span class="ni">📊</span><span class="nn">P&amp;L</span></button>
+    <button class="nb" onclick="go('disc')" data-id="disc"><span class="ni">🏷️</span><span class="nn">Discount</span></button>
+    <div class="sep">BUILD</div>
+    <button class="nb" onclick="go('area')" data-id="area"><span class="ni">📐</span><span class="nn">Area</span></button>
+    <button class="nb" onclick="go('unit')" data-id="unit"><span class="ni">🔁</span><span class="nn">Units</span></button>
+    <button class="nb" onclick="go('paint')" data-id="paint"><span class="ni">🖌️</span><span class="nn">Paint</span></button>
+    <button class="nb" onclick="go('floor')" data-id="floor"><span class="ni">🟫</span><span class="nn">Floor</span></button>
+    <div class="sep">HEALTH</div>
+    <button class="nb" onclick="go('bmi')" data-id="bmi"><span class="ni">⚖️</span><span class="nn">BMI</span></button>
+    <button class="nb" onclick="go('age')" data-id="age"><span class="ni">🎂</span><span class="nn">Age</span></button>
+    <button class="nb" onclick="go('cal')" data-id="cal"><span class="ni">🔥</span><span class="nn">Cal</span></button>
+    <button class="nb" onclick="go('preg')" data-id="preg"><span class="ni">🤰</span><span class="nn">Preg</span></button>
+    <div class="sep">MATH</div>
+    <button class="nb" onclick="go('pct')" data-id="pct"><span class="ni">%</span><span class="nn">Percent</span></button>
+    <button class="nb" onclick="go('frac')" data-id="frac"><span class="ni">½</span><span class="nn">Fraction</span></button>
+    <div class="sep">BIZ</div>
+    <button class="nb" onclick="go('vat')" data-id="vat"><span class="ni">🌐</span><span class="nn">VAT</span></button>
+    <button class="nb" onclick="go('sal')" data-id="sal"><span class="ni">💼</span><span class="nn">Salary</span></button>
+    <button class="nb" onclick="go('inv')" data-id="inv"><span class="ni">📋</span><span class="nn">Invoice</span></button>
+  </div>
+</nav>
+
+<main class="main">
+  <div class="topbar">
+    <span class="tbi" id="tbi">🔢</span>
+    <span class="tbt" id="tbt">Basic Calculator</span>
+    <span class="badge bo" id="tbb">Main</span>
+  </div>
+  <div class="content">
+
+<!-- HOME -->
+<div id="p-home" class="panel">
+<div class="wt">Welcome to <span style="color:#f97316">Zyntix</span> ⚡</div>
+<div class="ws">India's All-in-One Calculator — 21 Tools</div>
+<div class="hg">
+  <div class="hc" onclick="go('basic')"><div class="hi">🔢</div><div class="hn">Basic</div><div class="hc2">Main</div></div>
+  <div class="hc" onclick="go('sci')"><div class="hi">🧮</div><div class="hn">Scientific</div><div class="hc2">Math</div></div>
+  <div class="hc" onclick="go('gst')"><div class="hi">🧾</div><div class="hn">GST</div><div class="hc2">Finance</div></div>
+  <div class="hc" onclick="go('emi')"><div class="hi">🏦</div><div class="hn">EMI</div><div class="hc2">Finance</div></div>
+  <div class="hc" onclick="go('fdrd')"><div class="hi">📈</div><div class="hn">FD/RD</div><div class="hc2">Finance</div></div>
+  <div class="hc" onclick="go('int')"><div class="hi">💹</div><div class="hn">Interest</div><div class="hc2">Finance</div></div>
+  <div class="hc" onclick="go('pl')"><div class="hi">📊</div><div class="hn">P&amp;L</div><div class="hc2">Finance</div></div>
+  <div class="hc" onclick="go('disc')"><div class="hi">🏷️</div><div class="hn">Discount</div><div class="hc2">Finance</div></div>
+  <div class="hc" onclick="go('area')"><div class="hi">📐</div><div class="hn">Area</div><div class="hc2">Build</div></div>
+  <div class="hc" onclick="go('unit')"><div class="hi">🔁</div><div class="hn">Units</div><div class="hc2">Build</div></div>
+  <div class="hc" onclick="go('paint')"><div class="hi">🖌️</div><div class="hn">Paint</div><div class="hc2">Build</div></div>
+  <div class="hc" onclick="go('floor')"><div class="hi">🟫</div><div class="hn">Flooring</div><div class="hc2">Build</div></div>
+  <div class="hc" onclick="go('bmi')"><div class="hi">⚖️</div><div class="hn">BMI</div><div class="hc2">Health</div></div>
+  <div class="hc" onclick="go('age')"><div class="hi">🎂</div><div class="hn">Age</div><div class="hc2">Health</div></div>
+  <div class="hc" onclick="go('cal')"><div class="hi">🔥</div><div class="hn">Calorie</div><div class="hc2">Health</div></div>
+  <div class="hc" onclick="go('preg')"><div class="hi">🤰</div><div class="hn">Pregnancy</div><div class="hc2">Health</div></div>
+  <div class="hc" onclick="go('pct')"><div class="hi">%</div><div class="hn">Percent</div><div class="hc2">Math</div></div>
+  <div class="hc" onclick="go('frac')"><div class="hi">½</div><div class="hn">Fraction</div><div class="hc2">Math</div></div>
+  <div class="hc" onclick="go('vat')"><div class="hi">🌐</div><div class="hn">VAT</div><div class="hc2">Biz</div></div>
+  <div class="hc" onclick="go('sal')"><div class="hi">💼</div><div class="hn">Salary</div><div class="hc2">Biz</div></div>
+  <div class="hc" onclick="go('inv')"><div class="hi">📋</div><div class="hn">Invoice</div><div class="hc2">Biz</div></div>
+</div>
+</div>
+
+<!-- BASIC -->
+<div id="p-basic" class="panel on">
+<div class="cw">
+  <div class="disp">
+    <div class="dexpr" id="bexpr"></div>
+    <div class="dval" id="bval">0</div>
+    <div class="dlive" id="blive"></div>
+  </div>
+  <div class="tr">
+    <button class="bt cl" onclick="bclr()">AC</button>
+    <button class="bt gy" onclick="bsign()">+/−</button>
+    <button class="bt gy" onclick="bpct()">%</button>
+    <button class="bt bk" onclick="bbk()">⌫</button>
+    <button class="bt op" onclick="bop('/')">÷</button>
+  </div>
+  <div class="gr">
+    <button class="bt" onclick="bn('7')">7</button>
+    <button class="bt" onclick="bn('8')">8</button>
+    <button class="bt" onclick="bn('9')">9</button>
+    <button class="bt op" onclick="bop('*')">×</button>
+    <button class="bt" onclick="bn('4')">4</button>
+    <button class="bt" onclick="bn('5')">5</button>
+    <button class="bt" onclick="bn('6')">6</button>
+    <button class="bt op" onclick="bop('-')">−</button>
+    <button class="bt" onclick="bn('1')">1</button>
+    <button class="bt" onclick="bn('2')">2</button>
+    <button class="bt" onclick="bn('3')">3</button>
+    <button class="bt op" onclick="bop('+')">+</button>
+    <button class="bt" style="grid-column:span 2" onclick="bn('0')">0</button>
+    <button class="bt" onclick="bdot()">.</button>
+    <button class="bt eq" onclick="beq()">=</button>
+  </div>
+</div>
+</div>
+
+<!-- SCIENTIFIC -->
+<div id="p-sci" class="panel">
+<div class="card" style="max-width:390px">
+  <div class="disp">
+    <div class="dexpr" id="sexpr"></div>
+    <div class="dval" id="sval">0</div>
+  </div>
+  <div class="sg">
+    <button class="st fn" onclick="sf('sin(')">sin</button>
+    <button class="st fn" onclick="sf('cos(')">cos</button>
+    <button class="st fn" onclick="sf('tan(')">tan</button>
+    <button class="st fn" onclick="sf('log(')">log</button>
+    <button class="st fn" onclick="sf('ln(')">ln</button>
+    <button class="st fn" onclick="sf('sqrt(')">√</button>
+    <button class="st fn" onclick="sf('(')">( </button>
+    <button class="st fn" onclick="sf(')')"> )</button>
+    <button class="st fn" onclick="sf('^')">xʸ</button>
+    <button class="st fn" onclick="sf('pi')">π</button>
+    <button class="st cl" onclick="sclr()">AC</button>
+    <button class="st cl" onclick="sdel()">⌫</button>
+    <button class="st op" onclick="sf('%')">%</button>
+    <button class="st op" onclick="sf('/')">÷</button>
+    <button class="st op" onclick="sf('*')">×</button>
+    <button class="st" onclick="sf('7')">7</button>
+    <button class="st" onclick="sf('8')">8</button>
+    <button class="st" onclick="sf('9')">9</button>
+    <button class="st op" onclick="sf('-')">−</button>
+    <button class="st op" onclick="sf('+')">+</button>
+    <button class="st" onclick="sf('4')">4</button>
+    <button class="st" onclick="sf('5')">5</button>
+    <button class="st" onclick="sf('6')">6</button>
+    <button class="st" onclick="sf('1')">1</button>
+    <button class="st" onclick="sf('2')">2</button>
+    <button class="st" onclick="sf('3')">3</button>
+    <button class="st" onclick="sf('0')">0</button>
+    <button class="st" onclick="sf('.')">.</button>
+    <button class="st fn" onclick="sf('e')">e</button>
+    <button class="st eq" onclick="seval()" style="grid-column:span 2">=</button>
+  </div>
+</div>
+</div>
+
+<!-- GST -->
+<div id="p-gst" class="panel">
+<div class="card"><h2>🧾 GST Calculator</h2>
+  <div class="fr"><label>Amount (₹)</label><input type="number" id="ga" placeholder="10000"></div>
+  <div class="r2">
+    <div class="fr"><label>GST Rate</label>
+      <select id="gr" onchange="document.getElementById('gcr').style.display=this.value=='custom'?'block':'none'">
+        <option value="5">5%</option><option value="12">12%</option><option value="18" selected>18%</option><option value="28">28%</option><option value="custom">Custom</option>
+      </select>
+    </div>
+    <div class="fr"><label>Type</label><select id="gt"><option value="exc">Add GST</option><option value="inc">Remove GST</option></select></div>
+  </div>
+  <div class="fr" id="gcr" style="display:none"><label>Custom %</label><input type="number" id="gc"></div>
+  <button class="btn" onclick="cGST()">Calculate GST</button>
+  <div class="res" id="gres"><div class="rl">GST Amount</div><div class="rv" id="gr1"></div><div class="rs" id="gr2"></div></div>
+</div>
+</div>
+
+<!-- EMI -->
+<div id="p-emi" class="panel">
+<div class="card"><h2>🏦 EMI Calculator</h2>
+  <div class="fr"><label>Loan Amount (₹)</label><input type="number" id="ep" placeholder="500000"></div>
+  <div class="r2">
+    <div class="fr"><label>Annual Rate (%)</label><input type="number" id="er" placeholder="8.5"></div>
+    <div class="fr"><label>Tenure</label><input type="number" id="et" placeholder="60"></div>
+  </div>
+  <div class="fr"><label>Tenure Type</label><select id="ett"><option value="m">Months</option><option value="y">Years</option></select></div>
+  <button class="btn" onclick="cEMI()">Calculate EMI</button>
+  <div class="res" id="eres"><div class="rl">Monthly EMI</div><div class="rv" id="er1"></div><div class="rs" id="er2"></div></div>
+</div>
+</div>
+
+<!-- FD/RD -->
+<div id="p-fdrd" class="panel">
+<div class="card"><h2>📈 FD / RD Calculator</h2>
+  <div class="fr"><label>Type</label><select id="ftype" onchange="toggleRD()"><option value="fd">Fixed Deposit</option><option value="rd">Recurring Deposit</option></select></div>
+  <div class="fr"><label id="fpl">Principal (₹)</label><input type="number" id="fp" placeholder="100000"></div>
+  <div class="r2">
+    <div class="fr"><label>Annual Rate (%)</label><input type="number" id="fr2" placeholder="7"></div>
+    <div class="fr"><label>Years</label><input type="number" id="ft" placeholder="3"></div>
+  </div>
+  <div class="fr" id="fcomp"><label>Compounding</label><select id="fc"><option value="4">Quarterly</option><option value="2">Half-Yearly</option><option value="1">Yearly</option><option value="12">Monthly</option></select></div>
+  <button class="btn" onclick="cFDRD()">Calculate Returns</button>
+  <div class="res" id="fres"><div class="rl">Maturity Amount</div><div class="rv" id="fr1"></div><div class="rs" id="frs"></div></div>
+</div>
+</div>
+
+<!-- INTEREST -->
+<div id="p-int" class="panel">
+<div class="card"><h2>💹 Interest Calculator</h2>
+  <div class="fr"><label>Type</label><select id="itype"><option value="si">Simple Interest</option><option value="ci">Compound Interest</option></select></div>
+  <div class="fr"><label>Principal (₹)</label><input type="number" id="ip" placeholder="50000"></div>
+  <div class="r2">
+    <div class="fr"><label>Rate (%/year)</label><input type="number" id="ir" placeholder="10"></div>
+    <div class="fr"><label>Time (Years)</label><input type="number" id="it" placeholder="5"></div>
+  </div>
+  <button class="btn" onclick="cInt()">Calculate</button>
+  <div class="res" id="ires"><div class="rl">Interest Earned</div><div class="rv" id="ir1"></div><div class="rs" id="ir2"></div></div>
+</div>
+</div>
+
+<!-- P&L -->
+<div id="p-pl" class="panel">
+<div class="card"><h2>📊 Profit &amp; Loss</h2>
+  <div class="r2">
+    <div class="fr"><label>Cost Price (₹)</label><input type="number" id="pcp" placeholder="8000"></div>
+    <div class="fr"><label>Selling Price (₹)</label><input type="number" id="psp" placeholder="10000"></div>
+  </div>
+  <button class="btn" onclick="cPL()">Calculate</button>
+  <div class="res" id="pres"><div class="rl">Result</div><div class="rv" id="pr1"></div><div class="rs" id="pr2"></div></div>
+</div>
+</div>
+
+<!-- DISCOUNT -->
+<div id="p-disc" class="panel">
+<div class="card"><h2>🏷️ Discount Calculator</h2>
+  <div class="r2">
+    <div class="fr"><label>Original Price (₹)</label><input type="number" id="dp" placeholder="2000"></div>
+    <div class="fr"><label>Discount (%)</label><input type="number" id="dd" placeholder="20"></div>
+  </div>
+  <button class="btn" onclick="cDisc()">Calculate</button>
+  <div class="res" id="dres"><div class="rv" id="dr1"></div><div class="rs" id="dr2"></div></div>
+</div>
+</div>
+
+<!-- AREA -->
+<div id="p-area" class="panel">
+<div class="card"><h2>📐 Area Calculator</h2>
+  <div class="fr"><label>Shape</label><select id="ash" onchange="updArea()"><option value="rect">Rectangle/Square</option><option value="cir">Circle</option><option value="tri">Triangle</option></select></div>
+  <div id="arect"><div class="r2"><div class="fr"><label>Length</label><input type="number" id="al" placeholder="20"></div><div class="fr"><label>Width</label><input type="number" id="aw" placeholder="15"></div></div></div>
+  <div id="acir" style="display:none"><div class="fr"><label>Radius</label><input type="number" id="arad" placeholder="7"></div></div>
+  <div id="atri" style="display:none"><div class="r2"><div class="fr"><label>Base</label><input type="number" id="ab" placeholder="10"></div><div class="fr"><label>Height</label><input type="number" id="ah" placeholder="8"></div></div></div>
+  <button class="btn" onclick="cArea()">Calculate Area</button>
+  <div class="res" id="ares"><div class="rl">Area</div><div class="rv" id="ar1"></div></div>
+</div>
+</div>
+
+<!-- UNIT -->
+<div id="p-unit" class="panel">
+<div class="card" style="max-width:480px"><h2>🔁 Unit Converter</h2>
+  <div class="utabs">
+    <button class="ut on" onclick="setUT('len',this)">Length</button>
+    <button class="ut" onclick="setUT('wt',this)">Weight</button>
+    <button class="ut" onclick="setUT('tmp',this)">Temp</button>
+    <button class="ut" onclick="setUT('ar',this)">Area</button>
+    <button class="ut" onclick="setUT('vol',this)">Volume</button>
+    <button class="ut" onclick="setUT('spd',this)">Speed</button>
+  </div>
+  <div class="r2">
+    <div class="fr"><label>From</label><select id="uf" onchange="doConv()"></select></div>
+    <div class="fr"><label>To</label><select id="ut2" onchange="doConv()"></select></div>
+  </div>
+  <div class="fr"><label>Value</label><input type="number" id="uv" placeholder="1" oninput="doConv()"></div>
+  <div class="res show"><div class="rl">Result</div><div class="cbig" id="ur">—</div></div>
+</div>
+</div>
+
+<!-- PAINT -->
+<div id="p-paint" class="panel">
+<div class="card"><h2>🖌️ Paint Calculator</h2>
+  <div class="r2"><div class="fr"><label>Length (ft)</label><input type="number" id="ptl" placeholder="15"></div><div class="fr"><label>Width (ft)</label><input type="number" id="ptw" placeholder="12"></div></div>
+  <div class="r2"><div class="fr"><label>Height (ft)</label><input type="number" id="pth" placeholder="10"></div><div class="fr"><label>Doors/Windows</label><input type="number" id="ptd" placeholder="2"></div></div>
+  <div class="fr"><label>Coats</label><select id="ptc"><option value="1">1 Coat</option><option value="2" selected>2 Coats</option><option value="3">3 Coats</option></select></div>
+  <button class="btn" onclick="cPaint()">Calculate</button>
+  <div class="res" id="ptres"><div class="rl">Paint Required</div><div class="rv" id="ptr1"></div><div class="rs" id="ptr2"></div></div>
+</div>
+</div>
+
+<!-- FLOOR -->
+<div id="p-floor" class="panel">
+<div class="card"><h2>🟫 Flooring Calculator</h2>
+  <div class="r2"><div class="fr"><label>Length (ft)</label><input type="number" id="fll" placeholder="20"></div><div class="fr"><label>Width (ft)</label><input type="number" id="flw" placeholder="15"></div></div>
+  <div class="r2">
+    <div class="fr"><label>Tile Size</label><select id="flts"><option value="12">12x12"</option><option value="18" selected>18x18"</option><option value="24">24x24"</option><option value="36">36x36"</option></select></div>
+    <div class="fr"><label>Price/Tile (₹)</label><input type="number" id="flp" placeholder="80"></div>
+  </div>
+  <button class="btn" onclick="cFloor()">Calculate</button>
+  <div class="res" id="flres"><div class="rl">Tiles Required</div><div class="rv" id="flr1"></div><div class="rs" id="flr2"></div></div>
+</div>
+</div>
+
+<!-- BMI -->
+<div id="p-bmi" class="panel">
+<div class="card"><h2>⚖️ BMI Calculator</h2>
+  <div class="r2"><div class="fr"><label>Weight (kg)</label><input type="number" id="bw" placeholder="70"></div><div class="fr"><label>Height (cm)</label><input type="number" id="bh" placeholder="170"></div></div>
+  <button class="btn" onclick="cBMI()">Calculate BMI</button>
+  <div class="res" id="bmires"><div class="rl">Your BMI</div><div class="rv" id="bmir1"></div><div class="rs" id="bmir2"></div></div>
+</div>
+</div>
+
+<!-- AGE -->
+<div id="p-age" class="panel">
+<div class="card"><h2>🎂 Age Calculator</h2>
+  <div class="fr"><label>Date of Birth</label><input type="date" id="adob"></div>
+  <button class="btn" onclick="cAge()">Calculate Age</button>
+  <div class="res" id="ageres"><div class="rl">Your Age</div><div class="rv" id="ager1"></div><div class="rs" id="ager2"></div></div>
+</div>
+</div>
+
+<!-- CALORIE -->
+<div id="p-cal" class="panel">
+<div class="card"><h2>🔥 Calorie Calculator</h2>
+  <div class="r2"><div class="fr"><label>Age</label><input type="number" id="cage" placeholder="25"></div><div class="fr"><label>Gender</label><select id="cgen"><option value="m">Male</option><option value="f">Female</option></select></div></div>
+  <div class="r2"><div class="fr"><label>Weight (kg)</label><input type="number" id="cwt" placeholder="70"></div><div class="fr"><label>Height (cm)</label><input type="number" id="cht" placeholder="170"></div></div>
+  <div class="fr"><label>Activity</label><select id="cact"><option value="1.2">Sedentary</option><option value="1.375">Light</option><option value="1.55" selected>Moderate</option><option value="1.725">Active</option><option value="1.9">Very Active</option></select></div>
+  <button class="btn" onclick="cCal()">Calculate</button>
+  <div class="res" id="calres"><div class="rl">Daily Calories</div><div class="rv" id="calr1"></div><div class="rs" id="calr2"></div></div>
+</div>
+</div>
+
+<!-- PREGNANCY -->
+<div id="p-preg" class="panel">
+<div class="card"><h2>🤰 Due Date Calculator</h2>
+  <div class="fr"><label>Last Period (LMP)</label><input type="date" id="plmp"></div>
+  <div class="fr"><label>Cycle Length (days)</label><input type="number" id="pcyc" placeholder="28"></div>
+  <button class="btn" onclick="cPreg()">Calculate Due Date</button>
+  <div class="res" id="pregres"><div class="rl">Due Date</div><div class="rv" id="pregr1"></div><div class="rs" id="pregr2"></div></div>
+</div>
+</div>
+
+<!-- PERCENTAGE -->
+<div id="p-pct" class="panel">
+<div class="card"><h2>% Percentage Calculator</h2>
+  <div class="fr"><label>Type</label><select id="pctt"><option value="1">X% of Y</option><option value="2">X is what % of Y</option><option value="3">% Change (X to Y)</option></select></div>
+  <div class="r2"><div class="fr"><label>Value X</label><input type="number" id="pctx" placeholder="15"></div><div class="fr"><label>Value Y</label><input type="number" id="pcty" placeholder="200"></div></div>
+  <button class="btn" onclick="cPct()">Calculate</button>
+  <div class="res" id="pctres"><div class="rl">Result</div><div class="rv" id="pctr1"></div></div>
+</div>
+</div>
+
+<!-- FRACTION -->
+<div id="p-frac" class="panel">
+<div class="card"><h2>½ Fraction Calculator</h2>
+  <div class="fr"><label>Operation</label><select id="fop"><option value="+">Add</option><option value="-">Subtract</option><option value="*">Multiply</option><option value="/">Divide</option></select></div>
+  <div style="display:flex;gap:10px;align-items:center">
+    <div style="flex:1"><div class="fr"><label>Num 1</label><input type="number" id="fn1" placeholder="1"></div><div class="fr"><label>Den 1</label><input type="number" id="fd1" placeholder="2"></div></div>
+    <div style="font-size:1.3rem;color:#f97316;font-weight:800">+</div>
+    <div style="flex:1"><div class="fr"><label>Num 2</label><input type="number" id="fn2" placeholder="1"></div><div class="fr"><label>Den 2</label><input type="number" id="fd2" placeholder="3"></div></div>
+  </div>
+  <button class="btn" onclick="cFrac()">Calculate</button>
+  <div class="res" id="fracres"><div class="rl">Result</div><div class="rv" id="fracr1"></div><div class="rs" id="fracr2"></div></div>
+</div>
+</div>
+
+<!-- VAT -->
+<div id="p-vat" class="panel">
+<div class="card"><h2>🌐 VAT Calculator</h2>
+  <div class="r2"><div class="fr"><label>Amount (₹)</label><input type="number" id="va" placeholder="10000"></div><div class="fr"><label>VAT Rate (%)</label><input type="number" id="vr" placeholder="20"></div></div>
+  <div class="fr"><label>Type</label><select id="vt"><option value="exc">Add VAT</option><option value="inc">Remove VAT</option></select></div>
+  <button class="btn" onclick="cVAT()">Calculate VAT</button>
+  <div class="res" id="vatres"><div class="rl">VAT Amount</div><div class="rv" id="vatr1"></div><div class="rs" id="vatr2"></div></div>
+</div>
+</div>
+
+<!-- SALARY -->
+<div id="p-sal" class="panel">
+<div class="card"><h2>💼 Salary &amp; Tax</h2>
+  <div class="fr"><label>Annual CTC (₹)</label><input type="number" id="sctc" placeholder="600000"></div>
+  <div class="r2"><div class="fr"><label>PF (%)</label><input type="number" id="spf" value="12"></div><div class="fr"><label>Pro. Tax (₹/yr)</label><input type="number" id="spt" value="2400"></div></div>
+  <div class="fr"><label>Regime</label><select id="sreg"><option value="new">New</option><option value="old">Old</option></select></div>
+  <button class="btn" onclick="cSal()">Calculate</button>
+  <div class="res" id="salres"><div class="rl">Monthly In-Hand</div><div class="rv" id="salr1"></div><div class="rs" id="salr2"></div></div>
+</div>
+</div>
+
+<!-- INVOICE -->
+<div id="p-inv" class="panel">
+<div class="card"><h2>📋 Invoice Calculator</h2>
+  <div class="r2"><div class="fr"><label>Subtotal (₹)</label><input type="number" id="isub" placeholder="25000"></div><div class="fr"><label>GST (%)</label><input type="number" id="igst" placeholder="18"></div></div>
+  <div class="r2"><div class="fr"><label>Discount (%)</label><input type="number" id="idisc" placeholder="5"></div><div class="fr"><label>Shipping (₹)</label><input type="number" id="iship" placeholder="0"></div></div>
+  <button class="btn" onclick="cInv()">Generate Total</button>
+  <div class="res" id="invres"><div class="rl">Invoice Total</div><div class="rv" id="invr1"></div><div class="rs" id="invr2"></div></div>
+</div>
+</div>
+
+  </div><!-- content -->
+</main>
+
+<script>
+// NAVIGATION
+var NAV={
+  home:{t:'Dashboard',i:'🏠',b:'Home',c:'bo'},
+  basic:{t:'Basic Calculator',i:'🔢',b:'Main',c:'bo'},
+  sci:{t:'Scientific Calc',i:'🧮',b:'Math',c:'bm'},
+  gst:{t:'GST Calculator',i:'🧾',b:'Finance',c:'bf'},
+  emi:{t:'EMI Calculator',i:'🏦',b:'Finance',c:'bf'},
+  fdrd:{t:'FD/RD Calc',i:'📈',b:'Finance',c:'bf'},
+  int:{t:'Interest Calc',i:'💹',b:'Finance',c:'bf'},
+  pl:{t:'Profit & Loss',i:'📊',b:'Finance',c:'bf'},
+  disc:{t:'Discount Calc',i:'🏷️',b:'Finance',c:'bf'},
+  area:{t:'Area Calculator',i:'📐',b:'Build',c:'bc2'},
+  unit:{t:'Unit Converter',i:'🔁',b:'Build',c:'bc2'},
+  paint:{t:'Paint Calc',i:'🖌️',b:'Build',c:'bc2'},
+  floor:{t:'Flooring Calc',i:'🟫',b:'Build',c:'bc2'},
+  bmi:{t:'BMI Calculator',i:'⚖️',b:'Health',c:'bh'},
+  age:{t:'Age Calculator',i:'🎂',b:'Health',c:'bh'},
+  cal:{t:'Calorie Calc',i:'🔥',b:'Health',c:'bh'},
+  preg:{t:'Pregnancy Calc',i:'🤰',b:'Health',c:'bh'},
+  pct:{t:'Percentage Calc',i:'%',b:'Math',c:'bm'},
+  frac:{t:'Fraction Calc',i:'½',b:'Math',c:'bm'},
+  vat:{t:'VAT Calculator',i:'🌐',b:'Biz',c:'bb'},
+  sal:{t:'Salary & Tax',i:'💼',b:'Biz',c:'bb'},
+  inv:{t:'Invoice Calc',i:'📋',b:'Biz',c:'bb'}
+};
+function go(id){
+  try{sessionStorage.setItem('zp',id);}catch(e){}
+  document.querySelectorAll('.panel').forEach(function(p){p.classList.remove('on');});
+  var p=document.getElementById('p-'+id);
+  if(p) p.classList.add('on');
+  document.querySelectorAll('.nb').forEach(function(b){b.classList.remove('on');});
+  var nb=document.querySelector('.nb[data-id="'+id+'"]');
+  if(nb){nb.classList.add('on');nb.scrollIntoView({block:'nearest',behavior:'smooth'});}
+  var m=NAV[id]||{t:id,i:'',b:'',c:'bo'};
+  document.getElementById('tbt').textContent=m.t;
+  document.getElementById('tbi').textContent=m.i;
+  var bg=document.getElementById('tbb');
+  bg.textContent=m.b; bg.className='badge '+m.c;
+  window.scrollTo(0,0);
+  if(id==='unit') initU();
+}
+window.addEventListener('load',function(){
+  var s='basic';try{s=sessionStorage.getItem('zp')||'basic';}catch(e){}
+  go(s); initU();
+});
+
+// HELPERS
+function f2(n){return '\u20B9'+Number(n.toFixed(2)).toLocaleString('en-IN');}
+function fn(n,d){d=d||2;return Number(n.toFixed(d)).toLocaleString('en-IN');}
+function sR(id){document.getElementById(id).classList.add('show');}
+function g(id){return document.getElementById(id);}
+function gv(id){return +document.getElementById(id).value||0;}
+
+// BASIC CALC
+var bc='0',bp='',bo='',bn2=true;
+function upd(){g('bval').textContent=bc;live();}
+function live(){
+  var el=g('blive');
+  if(bo&&bp&&!bn2){
+    var a=parseFloat(bp),b=parseFloat(bc),r;
+    try{
+      if(bo==='+')r=a+b;else if(bo==='-')r=a-b;else if(bo==='*')r=a*b;else r=b?a/b:null;
+      el.textContent=(r!==null&&!isNaN(r)&&isFinite(r))?'= '+parseFloat(r.toFixed(10)):'';
+    }catch(e){el.textContent='';}
+  }else{el.textContent='';}
+}
+function bn(n){if(bn2){bc=n;bn2=false;}else{bc=bc==='0'?n:bc+n;}upd();}
+function bdot(){if(bn2){bc='0.';bn2=false;}else if(bc.indexOf('.')<0)bc+='.';upd();}
+function bop(o){
+  if(bo&&!bn2){var a=parseFloat(bp),b=parseFloat(bc),r;
+    if(bo==='+')r=a+b;else if(bo==='-')r=a-b;else if(bo==='*')r=a*b;else r=b?a/b:0;
+    bc=String(parseFloat(r.toFixed(10)));bo='';bp='';bn2=false;}
+  bp=bc;bo=o;bn2=true;
+  var s=o==='*'?'×':o==='/'?'÷':o;
+  g('bexpr').textContent=bp+' '+s;g('blive').textContent='';
+}
+function beq(){
+  if(!bo||bn2)return;
+  var a=parseFloat(bp),b=parseFloat(bc),r;
+  if(bo==='+')r=a+b;else if(bo==='-')r=a-b;else if(bo==='*')r=a*b;else r=b?a/b:0;
+  var s=bo==='*'?'×':bo==='/'?'÷':bo;
+  g('bexpr').textContent=bp+' '+s+' '+bc+' =';g('blive').textContent='';
+  bc=String(parseFloat(r.toFixed(10)));bo='';bp='';bn2=true;upd();
+}
+function bclr(){bc='0';bp='';bo='';bn2=true;g('bexpr').textContent='';g('blive').textContent='';upd();}
+function bbk(){if(bn2)return;bc=bc.length>1?bc.slice(0,-1):'0';if(bc==='-')bc='0';upd();}
+function bsign(){if(bc!=='0')bc=String(parseFloat(bc)*-1);upd();}
+function bpct(){bc=String(parseFloat(bc)/100);upd();}
+
+// SCIENTIFIC
+var sx='';
+function sf(v){sx+=v;g('sval').textContent=sx||'0';}
+function sclr(){sx='';g('sval').textContent='0';g('sexpr').textContent='';}
+function sdel(){sx=sx.slice(0,-1);g('sval').textContent=sx||'0';}
+function seval(){
+  try{
+    var e=sx.replace(/pi/g,Math.PI).replace(/e(?!\d)/g,Math.E)
+      .replace(/sin\(/g,'Math.sin(').replace(/cos\(/g,'Math.cos(').replace(/tan\(/g,'Math.tan(')
+      .replace(/log\(/g,'Math.log10(').replace(/ln\(/g,'Math.log(').replace(/sqrt\(/g,'Math.sqrt(').replace(/\^/g,'**');
+    g('sexpr').textContent=sx+' =';
+    var r=Function('"use strict";return ('+e+')')();
+    g('sval').textContent=parseFloat(r.toFixed(10));sx=String(parseFloat(r.toFixed(10)));
+  }catch(e2){g('sval').textContent='Error';sx='';}
+}
+
+// GST
+function cGST(){
+  var amt=+g('ga').value,rv=g('gr').value,rate=rv==='custom'?+g('gc').value:+rv,type=g('gt').value;
+  if(!amt||!rate)return;
+  var gst,base,tot;
+  if(type==='exc'){base=amt;gst=amt*rate/100;tot=amt+gst;}
+  else{base=amt*100/(100+rate);gst=amt-base;tot=amt;}
+  g('gr1').textContent=f2(gst);
+  g('gr2').innerHTML='Base: '+f2(base)+'<br>Total: '+f2(tot)+'<br>CGST '+rate/2+'%: '+f2(gst/2)+' | SGST '+rate/2+'%: '+f2(gst/2);
+  sR('gres');
+}
+
+// EMI
+function cEMI(){
+  var P=+g('ep').value,r=+g('er').value/100/12,t=+g('et').value;
+  if(g('ett').value==='y')t*=12;
+  if(!P||!r||!t)return;
+  var emi=P*r*Math.pow(1+r,t)/(Math.pow(1+r,t)-1),tot=emi*t,int=tot-P;
+  g('er1').textContent=f2(emi);
+  g('er2').innerHTML='Total: '+f2(tot)+'<br>Interest: '+f2(int)+'<br>Principal: '+f2(P)+'<br>Months: '+t;
+  sR('eres');
+}
+
+// FD/RD
+function toggleRD(){
+  var t=g('ftype').value;
+  g('fpl').textContent=t==='rd'?'Monthly Deposit (₹)':'Principal (₹)';
+  g('fcomp').style.display=t==='rd'?'none':'block';
+}
+function cFDRD(){
+  var P=+g('fp').value,r=+g('fr2').value/100,t=+g('ft').value,type=g('ftype').value;
+  if(!P||!r||!t)return;
+  var mat,int;
+  if(type==='fd'){var n=+g('fc').value;mat=P*Math.pow(1+r/n,n*t);int=mat-P;}
+  else{var nm=t*12,rm=r/12;mat=P*(Math.pow(1+rm,nm)-1)/rm*(1+rm);int=mat-P*nm;}
+  g('fr1').textContent=f2(mat);
+  g('frs').innerHTML='Invested: '+f2(type==='rd'?P*t*12:P)+'<br>Interest: '+f2(int);
+  sR('fres');
+}
+
+// INTEREST
+function cInt(){
+  var P=+g('ip').value,r=+g('ir').value/100,t=+g('it').value,type=g('itype').value;
+  if(!P||!r||!t)return;
+  var int,tot;
+  if(type==='si'){int=P*r*t;tot=P+int;}else{tot=P*Math.pow(1+r,t);int=tot-P;}
+  g('ir1').textContent=f2(int);
+  g('ir2').innerHTML='Principal: '+f2(P)+'<br>Total: '+f2(tot)+'<br>'+(type==='si'?'Simple':'Compound');
+  sR('ires');
+}
+
+// P&L
+function cPL(){
+  var cp=+g('pcp').value,sp=+g('psp').value;
+  if(!cp||!sp)return;
+  var diff=sp-cp,pct=diff/cp*100;
+  g('pr1').textContent=f2(Math.abs(diff));
+  g('pr2').innerHTML=(diff>=0?'🟢 Profit':'🔴 Loss')+': '+fn(Math.abs(pct))+'%<br>Cost: '+f2(cp)+' | Sale: '+f2(sp);
+  sR('pres');
+}
+
+// DISCOUNT
+function cDisc(){
+  var p=+g('dp').value,d=+g('dd').value;
+  if(!p||!d)return;
+  var da=p*d/100,fin=p-da;
+  g('dr1').textContent=f2(fin);
+  g('dr2').innerHTML='Original: '+f2(p)+'<br>You save: '+f2(da)+' ('+d+'%)';
+  sR('dres');
+}
+
+// AREA
+function updArea(){
+  var s=g('ash').value;
+  g('arect').style.display=s==='rect'?'block':'none';
+  g('acir').style.display=s==='cir'?'block':'none';
+  g('atri').style.display=s==='tri'?'block':'none';
+}
+function cArea(){
+  var s=g('ash').value,a;
+  if(s==='rect'){a=+g('al').value * +g('aw').value;}
+  else if(s==='cir'){var rad=+g('arad').value;a=Math.PI*rad*rad;}
+  else{a=0.5*(+g('ab').value)*(+g('ah').value);}
+  g('ar1').textContent=fn(a,3)+' sq units';sR('ares');
+}
+
+// UNIT CONVERTER
+var UD={
+  len:{u:['mm','cm','m','km','inch','feet','yard','mile'],t:{mm:.001,cm:.01,m:1,km:1000,inch:.0254,feet:.3048,yard:.9144,mile:1609.34}},
+  wt:{u:['mg','g','kg','tonne','ounce','pound'],t:{mg:.000001,g:.001,kg:1,tonne:1000,ounce:.0283495,pound:.453592}},
+  tmp:{u:['C','F','K'],sp:true},
+  ar:{u:['mm2','cm2','m2','km2','ft2','acre','hectare'],t:{mm2:.000001,cm2:.0001,m2:1,km2:1e6,ft2:.092903,acre:4046.86,hectare:10000}},
+  vol:{u:['ml','L','m3','tsp','tbsp','cup','gallon'],t:{ml:.001,L:1,m3:1000,tsp:.00492892,tbsp:.0147868,cup:.236588,gallon:3.78541}},
+  spd:{u:['m/s','km/h','mph','knot'],t:{'m/s':1,'km/h':.277778,mph:.44704,knot:.514444}}
+};
+var cUT='len';
+function setUT(t,el){cUT=t;document.querySelectorAll('.ut').forEach(function(b){b.classList.remove('on');});el.classList.add('on');initU();}
+function initU(){
+  var d=UD[cUT],f=g('uf'),t=g('ut2');
+  f.innerHTML=t.innerHTML='';
+  d.u.forEach(function(u){f.innerHTML+='<option>'+u+'</option>';t.innerHTML+='<option>'+u+'</option>';});
+  t.selectedIndex=1;doConv();
+}
+function doConv(){
+  var d=UD[cUT],f=g('uf').value,t=g('ut2').value,v=parseFloat(g('uv').value)||1,r;
+  if(d.sp){var c;if(f==='C')c=v;else if(f==='F')c=(v-32)*5/9;else c=v-273.15;if(t==='C')r=c;else if(t==='F')r=c*9/5+32;else r=c+273.15;}
+  else{r=v*d.t[f]/d.t[t];}
+  g('ur').textContent=fn(r,6)+' '+t;
+}
+
+// PAINT
+function cPaint(){
+  var l=+g('ptl').value,w=+g('ptw').value,h=+g('pth').value,d=+g('ptd').value||0,c=+g('ptc').value;
+  if(!l||!w||!h)return;
+  var wa=2*(l+w)*h-d*20,pl=wa/100*c;
+  g('ptr1').textContent=fn(pl,1)+' Litres';
+  g('ptr2').innerHTML='Wall area: '+fn(wa)+' sq ft<br>4L tins: '+Math.ceil(pl/4);
+  sR('ptres');
+}
+
+// FLOOR
+function cFloor(){
+  var l=+g('fll').value,w=+g('flw').value,ts=+g('flts').value/12,p=+g('flp').value||0;
+  if(!l||!w)return;
+  var tiles=Math.ceil(l*w/(ts*ts)*1.1);
+  g('flr1').textContent=tiles+' tiles';
+  g('flr2').innerHTML='Area: '+fn(l*w)+' sq ft (+10% waste)'+(p?'<br>Cost: '+f2(tiles*p):'');
+  sR('flres');
+}
+
+// BMI
+function cBMI(){
+  var w=+g('bw').value,h=+g('bh').value/100;
+  if(!w||!h)return;
+  var bmi=w/(h*h),cat=bmi<18.5?'🔵 Underweight':bmi<25?'🟢 Normal':bmi<30?'🟡 Overweight':'🔴 Obese';
+  g('bmir1').textContent=fn(bmi,1);g('bmir2').innerHTML='Category: '+cat+'<br>Healthy: 18.5–24.9';sR('bmires');
+}
+
+// AGE (FIXED)
+function cAge(){
+  var dob=new Date(g('adob').value);if(!dob.getTime())return;
+  var now=new Date();
+  var years=now.getFullYear()-dob.getFullYear();
+  var months=now.getMonth()-dob.getMonth();
+  var days=now.getDate()-dob.getDate();
+  if(days<0){
+    months--;
+    days+=new Date(now.getFullYear(),now.getMonth(),0).getDate();
+  }
+  if(months<0){
+    years--;
+    months+=12;
+  }
+  var totalDays=Math.floor((now-dob)/86400000);
+  g('ager1').textContent=years+' Years';
+  g('ager2').innerHTML=years+' yr, '+months+' mo, '+days+' days<br>Total: '+totalDays.toLocaleString('en-IN')+' days';
+  sR('ageres');
+}
+
+// CALORIE
+function cCal(){
+  var age=+g('cage').value,w=+g('cwt').value,h=+g('cht').value,gen=g('cgen').value,act=+g('cact').value;
+  if(!age||!w||!h)return;
+  var bmr=gen==='m'?88.362+13.397*w+4.799*h-5.677*age:447.593+9.247*w+3.098*h-4.330*age;
+  var tdee=bmr*act;
+  g('calr1').textContent=Math.round(tdee)+' kcal';
+  g('calr2').innerHTML='BMR: '+Math.round(bmr)+' kcal<br>Lose: '+Math.round(tdee-500)+' | Gain: '+Math.round(tdee+500)+' kcal/day';
+  sR('calres');
+}
+
+// PREGNANCY
+function cPreg(){
+  var lmp=new Date(g('plmp').value),cyc=+g('pcyc').value||28;if(!lmp.getTime())return;
+  var due=new Date(lmp);due.setDate(due.getDate()+280+(cyc-28));
+  var now=new Date(),wks=Math.floor((now-lmp)/604800000),dl=Math.round((due-now)/86400000);
+  g('pregr1').textContent=due.toLocaleDateString('en-IN',{year:'numeric',month:'long',day:'numeric'});
+  g('pregr2').innerHTML='Week: '+wks+'<br>Days left: '+Math.max(0,dl)+'<br>Trimester: '+(wks<=13?'1st':wks<=26?'2nd':'3rd');
+  sR('pregres');
+}
+
+// PERCENTAGE
+function cPct(){
+  var type=g('pctt').value,x=+g('pctx').value,y=+g('pcty').value,r;
+  if(type==='1'){r=x/100*y;g('pctr1').textContent=fn(r);}
+  else if(type==='2'){r=x/y*100;g('pctr1').textContent=fn(r)+'%';}
+  else{r=(y-x)/x*100;g('pctr1').textContent=fn(r)+'% '+(r>=0?'increase':'decrease');}
+  sR('pctres');
+}
+
+// FRACTION
+function gcd(a,b){return b?gcd(b,a%b):a;}
+function cFrac(){
+  var n1=+g('fn1').value,d1=+g('fd1').value,n2=+g('fn2').value,d2=+g('fd2').value,op=g('fop').value;
+  if(!d1||!d2)return;
+  var rn,rd;
+  if(op==='+'){rn=n1*d2+n2*d1;rd=d1*d2;}else if(op==='-'){rn=n1*d2-n2*d1;rd=d1*d2;}
+  else if(op==='*'){rn=n1*n2;rd=d1*d2;}else{rn=n1*d2;rd=d1*n2;}
+  var gc=gcd(Math.abs(rn),Math.abs(rd));
+  g('fracr1').textContent=(rn/gc)+' / '+(rd/gc);
+  g('fracr2').textContent='Decimal: '+fn(rn/rd,6);sR('fracres');
+}
+
+// VAT
+function cVAT(){
+  var a=+g('va').value,r=+g('vr').value,t=g('vt').value;if(!a||!r)return;
+  var vat,tot,base;
+  if(t==='exc'){base=a;vat=a*r/100;tot=a+vat;}else{base=a*100/(100+r);vat=a-base;tot=a;}
+  g('vatr1').textContent=f2(vat);g('vatr2').innerHTML='Base: '+f2(base)+'<br>Total: '+f2(tot);sR('vatres');
+}
+
+// SALARY
+function cSal(){
+  var ctc=+g('sctc').value,pf=Math.min(ctc*(+g('spf').value/100),21600),pt=+g('spt').value,reg=g('sreg').value,tax=ctc-pf-pt,t=0;
+  if(!ctc)return;
+  if(reg==='new'){
+    if(tax>1500000)t=150000+(tax-1500000)*0.30;else if(tax>1200000)t=90000+(tax-1200000)*0.20;
+    else if(tax>900000)t=45000+(tax-900000)*0.15;else if(tax>600000)t=15000+(tax-600000)*0.10;
+    else if(tax>300000)t=(tax-300000)*0.05;if(tax<=700000)t=Math.max(0,t-(t>0?25000:0));
+  }else{
+    if(tax>1000000)t=112500+(tax-1000000)*0.30;else if(tax>500000)t=12500+(tax-500000)*0.20;else if(tax>250000)t=(tax-250000)*0.05;
+  }
+  var tt=t*1.04,mo=(ctc-pf-pt-tt)/12;
+  g('salr1').textContent=f2(mo);g('salr2').innerHTML='Annual: '+f2(mo*12)+'<br>Tax: '+f2(tt)+' | PF: '+f2(pf);sR('salres');
+}
+
+// INVOICE
+function cInv(){
+  var sub=+g('isub').value,gst=+g('igst').value/100,disc=+g('idisc').value/100,ship=+g('iship').value||0;
+  if(!sub)return;
+  var da=sub*disc,af=sub-da,ga=af*gst,tot=af+ga+ship;
+  g('invr1').textContent=f2(tot);
+  g('invr2').innerHTML='Subtotal: '+f2(sub)+'<br>Discount: -'+f2(da)+'<br>GST: +'+f2(ga)+'<br>Ship: +'+f2(ship)+'<br><b>Total: '+f2(tot)+'</b>';
+  sR('invres');
+}
+
+// REGISTER SERVICE WORKER (external file)
+if ('serviceWorker' in navigator) {
+  navigator.serviceWorker.register('service-worker.js')
+    .then(reg => console.log('SW registered', reg))
+    .catch(err => console.log('SW registration failed', err));
+}
+</script>
+</body>
+</html>
